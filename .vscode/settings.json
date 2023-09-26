@@ -5,7 +5,7 @@
   "editor.renderWhitespace": "all",
   "editor.renderControlCharacters": true,
   "editor.bracketPairColorization.enabled": true,
-  "extensions.ignoreRecommendations": true,
+  "extensions.ignoreRecommendations": false,
   "files.exclude": {
     "**/node_modules": true
   },
@@ -26,5 +26,6 @@
   },
   "[javascript]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
-  }
+  },
+  "deno.config": "./client/src/deno.json"
 }

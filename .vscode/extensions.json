@@ -1,10 +1,12 @@
 {
-    // See http://go.microsoft.com/fwlink/?LinkId=827846
-    // for the documentation about the extensions.json format
-    // Keep these in sync with `.gitpod.yml` to support people with gitpod dev environments
-    "recommendations": [
-        "ms-azuretools.vscode-docker",
-        "streetsidesoftware.code-spell-checker"
-        //"42Crunch.vscode-openapi"
-    ]
+  // See http://go.microsoft.com/fwlink/?LinkId=827846
+  // for the documentation about the extensions.json format
+  // Keep these in sync with `.gitpod.yml` to support people with gitpod dev environments
+  "recommendations": [
+    "ms-azuretools.vscode-docker",
+    "streetsidesoftware.code-spell-checker",
+    "denoland.vscode-deno",
+    "sastan.twind-intellisense",
+    "42Crunch.vscode-openapi"
+  ]
 }
