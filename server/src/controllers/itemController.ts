@@ -17,10 +17,12 @@ export const getItem = ({ params, response }: Context) => {
 
 export const addItem = async ({ request, response }: Context) => {
   const body = request.body();
+  console.log(body);
   const newItem = await body.value;
-  itemModel.addItem(newItem);
+  console.log(newItem);
+  const item_id = itemModel.addItem(newItem);
   response.status = 201;
-  response.body = { message: "Item created." };
+  response.body = itemModel.getItemById(item_id);
 };
 
 export const deleteItem = ({ params, response }: Context) => {

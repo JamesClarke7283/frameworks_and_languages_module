@@ -1,19 +1,15 @@
-import {DB}  from "../deps.ts";
+import { DB } from "../deps.ts";
 
 // Create an in-memory SQLite database
 const db = new DB(":memory:");
 
-db.query(`
-  CREATE TABLE IF NOT EXISTS items (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id TEXT,
-    keywords TEXT,
-    description TEXT,
-    lat REAL,
-    lon REAL,
-    date_from TEXT,
-    date_to TEXT
-  );
-`);
+const sql = await Deno.readTextFile("src/db/sql/create_tables.sql");
+const sqlStatements = sql.split(";").map((s) => s.trim()).filter((s) =>
+  s.length > 0
+);
+
+for (const statement of sqlStatements) {
+  db.query(statement);
+}
 
 export default db;
