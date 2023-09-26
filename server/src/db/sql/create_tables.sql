@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS items (
   description TEXT,
   lat REAL,
   lon REAL,
-  date_from TEXT,
+  date_from TEXT NOT NULL,
   date_to TEXT NULL
 );
 

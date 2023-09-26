@@ -3,19 +3,21 @@ import db from "../db/database.ts";
 // Retrieve all items along with their keywords
 export const getAllItems = () => {
   const itemRows = [...db.query("SELECT * FROM items")];
-  const items = itemRows.map(([id, user_id, description, lat, lon]) => {
-    const keywordRows = [...db.query(
-      `
+  const items = itemRows.map(
+    ([id, user_id, description, lat, lon, date_from]) => {
+      const keywordRows = [...db.query(
+        `
       SELECT k.keyword 
       FROM keywords_list kl 
       JOIN keywords k ON kl.keyword_id = k.keyword_id 
       WHERE kl.item_id = ?
     `,
-      [id],
-    )];
-    const keywords = keywordRows.map(([keyword]) => keyword);
-    return { id, user_id, description, lat, lon, keywords };
-  });
+        [id],
+      )];
+      const keywords = keywordRows.map(([keyword]) => keyword);
+      return { id, user_id, description, lat, lon, keywords, date_from };
+    },
+  );
   return items;
 };
 
@@ -23,7 +25,7 @@ export const getAllItems = () => {
 export const getItemById = (id: number) => {
   const [itemRow] = [...db.query("SELECT * FROM items WHERE id = ?", [id])];
   if (itemRow) {
-    const [id, user_id, description, lat, lon] = itemRow;
+    const [id, user_id, description, lat, lon, date_from] = itemRow;
     const keywordRows = [...db.query(
       `
       SELECT k.keyword 
@@ -34,13 +36,21 @@ export const getItemById = (id: number) => {
       [id],
     )];
     const keywords = keywordRows.map(([keyword]) => keyword);
-    return { id, user_id, description, lat, lon, keywords };
+    return { id, user_id, description, lat, lon, keywords, date_from };
   }
   return null;
 };
 
 export const addItem = (item: any) => {
-  // Insert item into 'items' table
+  // Validate required fields
+  const requiredFields = ["user_id", "description", "lat", "lon", "keywords"];
+  for (const field of requiredFields) {
+    if (!item.hasOwnProperty(field)) {
+      return false;
+    }
+  }
+
+  // Proceed with adding the item
   db.query(
     "INSERT INTO items (user_id, description, lat, lon, date_from) VALUES (?, ?, ?, ?, ?)",
     [
@@ -52,27 +62,24 @@ export const addItem = (item: any) => {
     ],
   );
 
-  // Get the newly inserted item's ID and cast to number
-  const itemId = db.lastInsertRowId as number;
+  const itemId = db.lastInsertRowId as number; // Cast to number
 
-  // Insert keywords into 'keywords' table and link in 'keywords_list'
   for (const keyword of item.keywords) {
     let keywordId: number;
 
-    // Check if keyword already exists
-    const existingKeywords = [...db.query(
-      "SELECT keyword_id FROM keywords WHERE keyword = ?",
-      [keyword],
-    )];
+    const existingKeywords = [
+      ...db.query("SELECT keyword_id FROM keywords WHERE keyword = ?", [
+        keyword,
+      ]),
+    ];
+
     if (existingKeywords.length > 0) {
-      keywordId = existingKeywords[0][0] as number; // Explicitly cast to number
+      keywordId = existingKeywords[0][0] as number;
     } else {
-      // Insert new keyword
       db.query("INSERT INTO keywords (keyword) VALUES (?)", [keyword]);
-      keywordId = db.lastInsertRowId as number; // Explicitly cast to number
+      keywordId = db.lastInsertRowId as number;
     }
 
-    // Insert into 'keywords_list' table
     db.query("INSERT INTO keywords_list (item_id, keyword_id) VALUES (?, ?)", [
       itemId,
       keywordId,
@@ -82,5 +89,21 @@ export const addItem = (item: any) => {
 };
 
 export const deleteItem = (id: number) => {
-  db.query("DELETE FROM items WHERE id = ?", [id]);
+  // Query to check if the item with the given ID exists
+  const [existingItem] = [
+    ...db.query("SELECT id FROM items WHERE id = ?", [id]),
+  ];
+
+  // If the item exists, proceed with deletion
+  if (existingItem) {
+    // First, delete the associated records from the 'keywords_list' table
+    db.query("DELETE FROM keywords_list WHERE item_id = ?", [id]);
+
+    // Then delete the item itself from the 'items' table
+    db.query("DELETE FROM items WHERE id = ?", [id]);
+    return true;
+  }
+
+  // If the item doesn't exist, return false
+  return false;
 };
