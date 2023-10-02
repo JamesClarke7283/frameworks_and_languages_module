@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "5kPQNQUw7uCXLwdx64eP/qyDYc+P37Y+MqbiLkRjzIWjc09GZ/TFEt6QMEhlWjKBJjhM1WoH2nsKo0AObevTkQ==",
+  "success": true,
+  "projectFilePath": "/home/impulse/Projects/Uni/frameworks_and_languages_module/frameworks_hello_world/dotnet_hello_world/dotnet_hello_world.csproj",
+  "expectedPackageFiles": [
+    "/home/impulse/.nuget/packages/microsoft.aspnetcore.app.ref/7.0.11/microsoft.aspnetcore.app.ref.7.0.11.nupkg.sha512"
+  ],
+  "logs": []
+}
