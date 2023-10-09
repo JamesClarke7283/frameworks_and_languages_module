@@ -1,8 +1,15 @@
+import { JSX } from "preact";
+
 export default function NewItemForm(
-  { api_endpoint }: { api_endpoint: string },
+  { api_endpoint, onSubmit }: {
+    api_endpoint: string;
+    onSubmit: (
+      event: Event,
+    ) => void;
+  },
 ) {
   return (
-    <form method="POST" action={api_endpoint + "/item"}>
+    <form method="POST" action={api_endpoint + "/item"} onSubmit={onSubmit}>
       <label for="create_user_id">Username</label>
       <input id="create_user_id" type="text" name="user_id" />
       <label for="create_lat">lat</label>
