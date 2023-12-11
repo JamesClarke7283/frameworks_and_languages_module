@@ -1,7 +1,8 @@
-import { useEffect, useState } from "preact/hooks";
-import Nav from "../components/Nav.tsx";
-import NewItemForm from "../components/NewItemForm.tsx";
-import ItemsListComponent, { Item } from "../components/ItemsList.tsx";
+import { useEffect } from "preact/hooks";
+import { useSignal } from "@preact/signals";
+import Nav from "../islands/Nav.tsx";
+import NewItemForm from "../islands/NewItemForm.tsx";
+import ItemsListComponent, { Item } from "../islands/ItemsList.tsx";
 import { PageProps } from "$fresh/server.ts";
 
 interface Props {
@@ -9,7 +10,7 @@ interface Props {
 }
 
 export default function Home(props: PageProps<Props>) {
-  const [items, setItems] = useState<Item[]>([]);
+  const items = useSignal<Item[]>([]);
   const params = new URLSearchParams(props.url.search);
   const api = params.get("api") || "";
 
@@ -20,7 +21,7 @@ export default function Home(props: PageProps<Props>) {
   const fetchItems = async () => {
     await fetch(`${api}/items`)
       .then((response) => response.json())
-      .then((data) => setItems(data))
+      .then((data) => items.value = data)
       .catch((error) => console.error("Error fetching items:", error));
   };
 
@@ -30,8 +31,7 @@ export default function Home(props: PageProps<Props>) {
 
   const handleSubmit = async (event: Event) => {
     event.preventDefault();
-    // Your form submission logic here. For example, sending a POST request to `${api}/item`
-    // After successfully submitting the form, fetch items again
+    // Your form submission logic here
     await fetchItems();
   };
 
@@ -41,7 +41,7 @@ export default function Home(props: PageProps<Props>) {
       <h3>New Item</h3>
       <NewItemForm api_endpoint={api} onSubmit={handleSubmit} />
       <h3>Items</h3>
-      <ItemsListComponent items={items} />
+      <ItemsListComponent items={items.value} />
     </>
   );
 }

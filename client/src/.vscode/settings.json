@@ -1,17 +1,4 @@
 {
-  "keyboard.layout": "00000809",
-  "workbench.startupEditor": "none",
-  "workbench.panel.defaultLocation": "bottom",
-  "editor.renderWhitespace": "all",
-  "editor.renderControlCharacters": true,
-  "editor.bracketPairColorization.enabled": true,
-  "extensions.ignoreRecommendations": false,
-  "files.exclude": {
-    "**/node_modules": true
-  },
-  "files.watcherExclude": {
-    "**/node_modules": true
-  },
   "deno.enable": true,
   "deno.lint": true,
   "editor.defaultFormatter": "denoland.vscode-deno",
@@ -27,7 +14,6 @@
   "[javascript]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
   },
-  "deno.config": "./client/deno.json",
   "css.customData": [
     ".vscode/tailwind.json"
   ]
