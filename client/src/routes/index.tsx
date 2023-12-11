@@ -13,17 +13,28 @@ export default function Home(props: PageProps<Props>) {
   const items = useSignal<Item[]>([]);
   const params = new URLSearchParams(props.url.search);
   const api = params.get("api") || "";
+  console.log("API endpoint:", api);
 
   if (!api) {
     return <div>Error: API endpoint is not available.</div>;
   }
 
-  const fetchItems = async () => {
-    await fetch(`${api}/items`)
-      .then((response) => response.json())
-      .then((data) => items.value = data)
-      .catch((error) => console.error("Error fetching items:", error));
-  };
+  function fetchItems() {
+    console.log("Fetching items from:", `${api}/items`);
+    fetch(`${api}/items`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(json => {
+        console.log("Items fetched:", json);
+        items.value = json;
+        console.log("Items state after fetch:", items.value);
+      })
+      .catch(err => console.error("Error fetching items:", err));
+  }
 
   useEffect(() => {
     fetchItems();
@@ -31,9 +42,14 @@ export default function Home(props: PageProps<Props>) {
 
   const handleSubmit = async (event: Event) => {
     event.preventDefault();
-    // Your form submission logic here
     await fetchItems();
   };
+
+  const handleRefresh = () => {
+    fetchItems();
+  };
+
+  console.log("Items state:", items.value);
 
   return (
     <>
@@ -41,6 +57,7 @@ export default function Home(props: PageProps<Props>) {
       <h3>New Item</h3>
       <NewItemForm api_endpoint={api} onSubmit={handleSubmit} />
       <h3>Items</h3>
+      <button onClick={handleRefresh} class="refresh-button">Refresh Items</button>
       <ItemsListComponent items={items.value} />
     </>
   );

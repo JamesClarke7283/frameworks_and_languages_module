@@ -1,15 +1,40 @@
 import { JSX } from "preact";
+import { useRef } from "preact/hooks";
 
-export default function NewItemForm(
-  { api_endpoint, onSubmit }: {
-    api_endpoint: string;
-    onSubmit: (
-      event: Event,
-    ) => void;
-  },
-) {
+function createItem(api_endpoint, data) {
+  fetch(`${api_endpoint}/item`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data),
+  })
+  .then(response => response.json())
+  .then(json => console.log('createItem()', json))
+  .catch(err => console.error(err));
+}
+
+export default function NewItemForm({ api_endpoint }: { api_endpoint: string }) {
+  const formRef = useRef<HTMLFormElement>();
+
+  const handleSubmit = (event: Event) => {
+      event.preventDefault();
+
+      if (formRef.current) {
+          const formData = new FormData(formRef.current);
+          const data = {
+              user_id: formData.get('user_id'),
+              lat: formData.get('lat'),
+              lon: formData.get('lon'),
+              image: formData.get('image'),
+              keywords: formData.get('keywords')?.toString().split(',').map((keyword: string) => keyword.trim()),
+              description: formData.get('description')
+          };
+
+          createItem(api_endpoint, data);
+          formRef.current.reset();
+      }
+  };
   return (
-    <form method="POST" action={api_endpoint + "/item"} onSubmit={onSubmit} class="flex flex-col p-4 max-w-lg mx-auto bg-white shadow-md rounded-lg">
+    <form ref={formRef} onSubmit={handleSubmit} class="flex flex-col p-4 max-w-lg mx-auto bg-white shadow-md rounded-lg">
     <label for="create_user_id" class="font-bold mb-1">Username</label>
     <input id="create_user_id" type="text" name="user_id" class="mb-4 p-2 border rounded" />
 
