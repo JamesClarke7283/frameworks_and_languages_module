@@ -53,24 +53,30 @@ export default function ItemsListComponent({ api_endpoint }: { api_endpoint: str
   }, []);
 
   return (
-    <div id="items">
-      <ul>
-        {items.map((item) => (
-          <li key={item.id}>
-            <span data-field="id">{item.id}</span>
-            <img src={item.image} alt={item.description} />
-            <a href="#">{item.userId}</a>
-            LatLon: <span>{item.lat}</span>,<span>{item.lon}</span>
-            <p>{item.description}</p>
-            <ul>
-              {item.keywords.map((keyword, index) => (
-                <li key={index}>{keyword}</li>
-              ))}
-            </ul>
-            <button>delete</button>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <div id="items" class="container mx-auto p-4">
+  <ul class="space-y-6">
+    {items.map((item) => (
+      <li key={item.id} class="flex flex-col bg-white shadow-lg rounded-lg overflow-hidden">
+        <div class="flex justify-between items-center p-5 border-b">
+          <span class="font-semibold text-lg text-gray-900" data-field="id">ID: {item.id}</span>
+          <a href="#" class="text-indigo-500 hover:text-indigo-700 font-medium">{item.userId}</a>
+        </div>
+        <img src={item.image} alt={item.description} class="w-full h-64 object-cover"/>
+        <div class="p-5">
+          <div class="text-gray-700 mb-2">LatLon: <span class="font-semibold">{item.lat}</span>, <span class="font-semibold">{item.lon}</span></div>
+          <p class="mt-2 text-gray-600 mb-4">{item.description}</p>
+          <div class="font-semibold text-gray-800 mb-2">Keywords</div>
+          <ul class="list-none space-y-1 pl-0">
+            {item.keywords.map((keyword, index) => (
+              <li key={index} class="text-gray-500">{keyword}</li>
+            ))}
+          </ul>
+        </div>
+        <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded m-5">Delete</button>
+      </li>
+    ))}
+  </ul>
+</div>
+
   );
 }
