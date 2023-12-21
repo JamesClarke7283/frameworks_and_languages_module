@@ -1,3 +1,5 @@
+import { useEffect, useState } from "preact/hooks";
+
 export type Item = {
   id: string;
   userId: string;
@@ -12,13 +14,50 @@ export type ItemsList = {
   items: Item[];
 };
 
-export default function ItemsListComponent({ items }: ItemsList) {
+export default function ItemsListComponent({ api_endpoint }: { api_endpoint: string }) {
+
+  const [items, setItems] = useState([]);
+  const [error, setError] = useState('');
+  
+  function fetchItems(api: string) {
+    console.log("Fetching items from:", `${api_endpoint}/items`);
+    fetch(`${api}/items`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(json => {
+        console.log("Items fetched:", json);
+        setItems(json);
+        console.log("Items state after fetch:", items.values);
+      })
+      .catch(err => console.error("Error fetching items:", err));
+  }
+
+  useEffect(() => {
+    const handleItemsUpdated = () => {
+      fetchItems(api_endpoint);
+    };
+
+    addEventListener('itemCreated', handleItemsUpdated);
+    addEventListener('itemDeleted', handleItemsUpdated);
+
+    fetchItems(api_endpoint); // Fetch items initially
+
+    return () => {
+      removeEventListener('itemCreated', handleItemsUpdated);
+      removeEventListener('itemDeleted', handleItemsUpdated);
+    };
+  }, []);
+
   return (
     <div id="items">
       <ul>
         {items.map((item) => (
           <li key={item.id}>
-            <span>{item.id}</span>
+            <span data-field="id">{item.id}</span>
             <img src={item.image} alt={item.description} />
             <a href="#">{item.userId}</a>
             LatLon: <span>{item.lat}</span>,<span>{item.lon}</span>

@@ -16,24 +16,7 @@ export default function Home(props: PageProps<Props>) {
   console.log("API endpoint:", api);
 
   if (!api) {
-    return <div>Error: API endpoint is not available.</div>;
-  }
-
-  function fetchItems() {
-    console.log("Fetching items from:", `${api}/items`);
-    fetch(`${api}/items`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(json => {
-        console.log("Items fetched:", json);
-        items.value = json;
-        console.log("Items state after fetch:", items.value);
-      })
-      .catch(err => console.error("Error fetching items:", err));
+    return <div>Error: Please enter `api` url parameter</div>;
   }
 
   useEffect(() => {
@@ -42,11 +25,8 @@ export default function Home(props: PageProps<Props>) {
 
   const handleSubmit = async (event: Event) => {
     event.preventDefault();
+    console.log("New item submitted",event.target)
     await fetchItems();
-  };
-
-  const handleRefresh = () => {
-    fetchItems();
   };
 
   console.log("Items state:", items.value);
@@ -55,10 +35,9 @@ export default function Home(props: PageProps<Props>) {
     <>
       <Nav />
       <h3>New Item</h3>
-      <NewItemForm api_endpoint={api} onSubmit={handleSubmit} />
+      <NewItemForm api_endpoint={api} get_items_func={handleSubmit} />
       <h3>Items</h3>
-      <button onClick={handleRefresh} class="refresh-button">Refresh Items</button>
-      <ItemsListComponent items={items.value} />
+      <ItemsListComponent api_endpoint={api} />
     </>
   );
 }

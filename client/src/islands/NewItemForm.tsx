@@ -12,10 +12,12 @@ function createItem(api_endpoint, data) {
   .catch(err => console.error(err));
 }
 
-export default function NewItemForm({ api_endpoint }: { api_endpoint: string }) {
+export default function NewItemForm({ api_endpoint, get_items_func }: { api_endpoint: string, get_items_func: (event: Event) => void }) {
   const formRef = useRef<HTMLFormElement>();
+  console.log(get_items_func);
+  console.log(api_endpoint);
 
-  const handleSubmit = (event: Event) => {
+  const handleSubmit = async (event: Event) => {
       event.preventDefault();
 
       if (formRef.current) {
@@ -30,6 +32,7 @@ export default function NewItemForm({ api_endpoint }: { api_endpoint: string }) 
           };
 
           createItem(api_endpoint, data);
+          await get_items_func(event);
           formRef.current.reset();
       }
   };
