@@ -18,6 +18,28 @@ export default function ItemsListComponent({ api_endpoint }: { api_endpoint: str
 
   const [items, setItems] = useState([]);
   const [error, setError] = useState('');
+  function deleteItem(id: number): void {
+    const url = `${api_endpoint}/item/${id}`
+
+    try {
+        const response = fetch(url, {
+            method: "DELETE"
+        }).then(response => {
+          if (!response.ok) {
+            console.log("Error Response:",response);
+              throw new Error(`Error: ${response.status} - ${response.statusText}`);
+          }
+  
+          console.log("Item deleted successfully.");
+          setItems(items.filter(item => item.id !== id.toString()));
+          dispatchEvent(new CustomEvent('delete_item'));
+        });
+        
+    } catch (error) {
+        console.error("Failed to delete the item:", error);
+    }
+}
+
   
   function fetchItems(api: string) {
     console.log("Fetching items from:", `${api_endpoint}/items`);
@@ -41,14 +63,14 @@ export default function ItemsListComponent({ api_endpoint }: { api_endpoint: str
       fetchItems(api_endpoint);
     };
 
-    addEventListener('itemCreated', handleItemsUpdated);
-    addEventListener('itemDeleted', handleItemsUpdated);
+    addEventListener('create_item', handleItemsUpdated);
+    addEventListener('delete_item', handleItemsUpdated);
 
-    fetchItems(api_endpoint); // Fetch items initially
+    fetchItems(api_endpoint);
 
     return () => {
-      removeEventListener('itemCreated', handleItemsUpdated);
-      removeEventListener('itemDeleted', handleItemsUpdated);
+      removeEventListener('create_item', handleItemsUpdated);
+      removeEventListener('delete_item', handleItemsUpdated);
     };
   }, []);
 
@@ -72,7 +94,11 @@ export default function ItemsListComponent({ api_endpoint }: { api_endpoint: str
             ))}
           </ul>
         </div>
-        <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded m-5">Delete</button>
+        <button
+              data-action="delete" 
+              class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded m-5"
+              onClick={() => deleteItem(parseInt(item.id))}
+        >Delete</button>
       </li>
     ))}
   </ul>

@@ -33,6 +33,7 @@ export default function NewItemForm({ api_endpoint, get_items_func }: { api_endp
           };
 
           createItem(api_endpoint, data);
+          dispatchEvent(new CustomEvent('create_item'));
           console.log("New item created:", data);
           //await get_items_func(event);
           formRef.current.reset();
