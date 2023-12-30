@@ -2,6 +2,7 @@ import { JSX } from "preact";
 import { useRef } from "preact/hooks";
 
 function createItem(api_endpoint, data) {
+  console.log("Creating item in createItem:", JSON.stringify(data));
   fetch(`${api_endpoint}/item`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -32,7 +33,8 @@ export default function NewItemForm({ api_endpoint, get_items_func }: { api_endp
           };
 
           createItem(api_endpoint, data);
-          await get_items_func(event);
+          console.log("New item created:", data);
+          //await get_items_func(event);
           formRef.current.reset();
       }
   };

@@ -2,9 +2,11 @@ import db from "../db/database.ts";
 
 // Retrieve all items along with their keywords
 export const getAllItems = () => {
-  const itemRows = [...db.query("SELECT * FROM items")];
+  const itemRows = [...db.query("SELECT * FROM items;")];
+  console.log("Items Rows:",itemRows);
   const items = itemRows.map(
-    ([id, user_id, description, lat, lon, date_from]) => {
+    ([id, user_id, description, image, lat, lon, date_from]) => {
+      console.log("Item getAllItems():",id, user_id, description, image, lat, lon, date_from);
       const keywordRows = [...db.query(
         `
       SELECT k.keyword 
@@ -15,7 +17,7 @@ export const getAllItems = () => {
         [id],
       )];
       const keywords = keywordRows.map(([keyword]) => keyword);
-      return { id, user_id, description, lat, lon, keywords, date_from };
+      return { id, user_id, description, image, lat, lon, keywords, date_from};
     },
   );
   return items;
@@ -25,7 +27,7 @@ export const getAllItems = () => {
 export const getItemById = (id: number) => {
   const [itemRow] = [...db.query("SELECT * FROM items WHERE id = ?", [id])];
   if (itemRow) {
-    const [id, user_id, description, lat, lon, date_from] = itemRow;
+    const [id, user_id, description, image, lat, lon, date_from] = itemRow;
     const keywordRows = [...db.query(
       `
       SELECT k.keyword 
@@ -36,7 +38,7 @@ export const getItemById = (id: number) => {
       [id],
     )];
     const keywords = keywordRows.map(([keyword]) => keyword);
-    return { id, user_id, description, lat, lon, keywords, date_from };
+    return { id, user_id, description, image, lat, lon, keywords, date_from };
   }
   return null;
 };
@@ -52,13 +54,14 @@ export const addItem = (item: any) => {
 
   // Proceed with adding the item
   db.query(
-    "INSERT INTO items (user_id, description, lat, lon, date_from) VALUES (?, ?, ?, ?, ?)",
+    "INSERT INTO items (user_id, description, lat, lon, date_from, image) VALUES (?, ?, ?, ?, ?, ?)",
     [
       item.user_id,
       item.description,
       item.lat,
       item.lon,
       new Date().toISOString(),
+      item.image,
     ],
   );
 

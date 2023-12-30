@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS items (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id TEXT,
   description TEXT,
+  image TEXT NULL,
   lat REAL,
   lon REAL,
   date_from TEXT NOT NULL,
